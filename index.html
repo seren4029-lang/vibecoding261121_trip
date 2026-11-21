@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>후쿠오카 3박 4일 여행 일정표</title>
+  <style>
+    /* 디자인 기준: banksalad.md — 흰 바탕, 쿨 그레이 글자, 초록 하나로 강조,
+       그림자 없이 연한 면과 1px 선으로 구분, 둥근 모서리(16px) */
+    :root {
+      /* 글자·면·선 (쿨 그레이) */
+      --text-strong: #191B1F;
+      --text-normal: #272A30;
+      --text-neutral: #606874;
+      --text-done: #8A919F;
+      --bg-layer2: #F8F9FB;
+      --line-normal: #F0F2F5;
+      --line-strong: #E5E8ED;
+      --check-border: #B3B8C0;
+      /* 초록 (강조·합계·체크) */
+      --green-bg: #ECF8F4;
+      --green-weak: #CDEEE2;
+      --green-normal: #06A96C;
+      --green-strong: #04764C;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #FFFFFF;
+      color: var(--text-normal);
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+        "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR",
+        "Malgun Gothic", sans-serif;
+      font-size: 16px;
+      line-height: 26px;
+      letter-spacing: -0.005em;
+      font-feature-settings: "tnum";
+      word-break: keep-all;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 휴대폰 한 줄 폭 — 큰 화면에서도 가운데 좁은 단일 열 */
+    header,
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    header {
+      padding-top: 40px;
+    }
+
+    main {
+      padding-bottom: 64px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--text-strong);
+      font-size: 28px;
+      line-height: 37px;
+      font-weight: 800;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: var(--text-neutral);
+      font-size: 15px;
+      line-height: 23px;
+    }
+
+    h2 {
+      margin: 40px 0 16px;
+      color: var(--text-strong);
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 800;
+    }
+
+    /* ---------- 날짜별 일정 (세로 타임라인) ---------- */
+
+    /* Day별 색: bg(카드 바탕) · weak(이름표 바탕) · normal(세로선) · strong(번호·이름표 글자) */
+    #day1 { --bg: #ECF8F4; --weak: #CDEEE2; --normal: #06A96C; --strong: #04764C; } /* 초록 */
+    #day2 { --bg: #E9F4FB; --weak: #CEE7F7; --normal: #0989D9; --strong: #066098; } /* 하늘 */
+    #day3 { --bg: #FCF1E9; --weak: #FAE3D3; --normal: #E47225; --strong: #A0501A; } /* 주황 */
+    #day4 { --bg: #FBE9EE; --weak: #F9DCE6; --normal: #E05181; --strong: #9D395A; } /* 분홍 */
+
+    #schedule article {
+      margin-bottom: 12px;
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 16px;
+    }
+
+    #schedule h3 {
+      display: inline-block;
+      margin: 0 0 16px;
+      padding: 2px 12px;
+      background: var(--weak);
+      color: var(--strong);
+      border-radius: 999px;
+      font-size: 15px;
+      line-height: 24px;
+      font-weight: 800;
+    }
+
+    #schedule ol {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: stop;
+    }
+
+    #schedule li {
+      position: relative;
+      min-height: 28px;
+      padding: 0 0 20px 44px;
+      color: var(--text-strong);
+      font-size: 16px;
+      line-height: 28px;
+      font-weight: 600;
+      counter-increment: stop;
+    }
+
+    #schedule li:last-child {
+      padding-bottom: 0;
+    }
+
+    /* 일정 순서 번호 (세로선 위의 동그라미) */
+    #schedule li::before {
+      content: counter(stop);
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      background: var(--strong);
+      color: #FFFFFF;
+      border-radius: 50%;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    /* 다음 일정까지 이어지는 세로선 */
+    #schedule li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 13px;
+      top: 28px;
+      bottom: 0;
+      width: 2px;
+      background: var(--normal);
+    }
+
+    /* ---------- 1인 예산표 ---------- */
+
+    #budget table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    #budget thead th {
+      padding: 12px 20px;
+      background: var(--bg-layer2);
+      color: var(--text-neutral);
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    #budget thead th:last-child,
+    #budget td {
+      text-align: right;
+    }
+
+    #budget tbody td {
+      padding: 16px 20px;
+      border-top: 1px solid var(--line-normal);
+      font-weight: 700;
+    }
+
+    #budget tbody td:first-child {
+      color: var(--text-normal);
+      font-weight: 500;
+      text-align: left;
+    }
+
+    /* 합계 행: 초록 면 위에 초록 글자로 강조 */
+    #budget tfoot th,
+    #budget tfoot td {
+      padding: 18px 20px;
+      background: var(--green-bg);
+      border-top: 1px solid var(--green-weak);
+      color: var(--green-strong);
+    }
+
+    #budget tfoot th {
+      font-size: 16px;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    #budget tfoot td {
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 800;
+    }
+
+    /* ---------- 준비물 체크리스트 ---------- */
+
+    #check-count {
+      display: inline-block;
+      margin: 0 0 12px;
+      padding: 2px 12px;
+      background: var(--green-weak);
+      color: var(--green-strong);
+      border-radius: 999px;
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 700;
+    }
+
+    #checklist ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #checklist li {
+      margin-bottom: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--line-strong);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: background-color 100ms;
+    }
+
+    #checklist label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 56px;
+      padding: 16px 20px;
+      color: var(--text-strong);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #checklist input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      flex: none;
+      display: grid;
+      place-content: center;
+      width: 24px;
+      height: 24px;
+      margin: 0;
+      background: #FFFFFF;
+      border: 2px solid var(--check-border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #checklist input[type="checkbox"]:checked {
+      background: var(--green-normal);
+      border-color: var(--green-normal);
+    }
+
+    #checklist input[type="checkbox"]:checked::after {
+      content: "";
+      width: 6px;
+      height: 11px;
+      margin-top: -2px;
+      border: solid #FFFFFF;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg);
+    }
+
+    #checklist input[type="checkbox"]:focus-visible {
+      outline: 2px solid var(--green-strong);
+      outline-offset: 2px;
+    }
+
+    /* 체크한 항목: 연한 면 + 흐린 글자 + 취소선 (JS가 done 클래스를 붙임) */
+    #checklist li.done {
+      background: var(--bg-layer2);
+    }
+
+    #checklist li.done label {
+      color: var(--text-done);
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>후쿠오카 3박 4일 여행 일정표</h1>
+    <p>10월 출발 · 성인 4명</p>
+  </header>
+
+  <main>
+
+    <!-- 날짜별 일정 -->
+    <section id="schedule">
+      <h2>날짜별 일정</h2>
+
+      <article id="day1">
+        <h3>Day 1</h3>
+        <ol>
+          <li>오후 도착</li>
+          <li>캐널시티</li>
+          <li>나카스 포장마차 (저녁)</li>
+        </ol>
+      </article>
+
+      <article id="day2">
+        <h3>Day 2</h3>
+        <ol>
+          <li>다자이후 텐만구</li>
+          <li>스타벅스 다자이후점</li>
+          <li>저녁 모츠나베</li>
+        </ol>
+      </article>
+
+      <article id="day3">
+        <h3>Day 3</h3>
+        <ol>
+          <li>유후인 당일치기 (버스 왕복)</li>
+          <li>긴린코 호수</li>
+        </ol>
+      </article>
+
+      <article id="day4">
+        <h3>Day 4</h3>
+        <ol>
+          <li>하카타역 쇼핑</li>
+          <li>오후 출국</li>
+        </ol>
+      </article>
+    </section>
+
+    <!-- 1인 예산표 -->
+    <section id="budget">
+      <h2>1인 예산표</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>금액 (1인)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>항공</td>
+            <td data-amount="25">25만원</td>
+          </tr>
+          <tr>
+            <td>숙소 (3박)</td>
+            <td data-amount="18">18만원</td>
+          </tr>
+          <tr>
+            <td>식비</td>
+            <td data-amount="15">15만원</td>
+          </tr>
+          <tr>
+            <td>교통</td>
+            <td data-amount="8">8만원</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>합계</th>
+            <td id="budget-total">66만원</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <!-- 준비물 체크리스트 -->
+    <section id="checklist">
+      <h2>준비물 체크리스트</h2>
+      <p id="check-count">준비 완료 0 / 4</p>
+      <ul>
+        <li><label><input type="checkbox"> 여권</label></li>
+        <li><label><input type="checkbox"> 유심</label></li>
+        <li><label><input type="checkbox"> 1인 엔화 3만엔</label></li>
+        <li><label><input type="checkbox"> 우산</label></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script>
+    // 예산 합계: 각 항목의 data-amount(만원)를 더해서 표시
+    var amounts = document.querySelectorAll('#budget td[data-amount]');
+    var sum = 0;
+    amounts.forEach(function (cell) {
+      sum += Number(cell.dataset.amount);
+    });
+    document.getElementById('budget-total').textContent = sum + '만원';
+
+    // 준비물 체크: 체크한 항목에 done 표시를 달고, 완료 개수를 갱신
+    var boxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+    var countText = document.getElementById('check-count');
+
+    function updateChecklist() {
+      var done = 0;
+      boxes.forEach(function (box) {
+        var item = box.closest('li');
+        item.classList.toggle('done', box.checked);
+        if (box.checked) done++;
+      });
+      countText.textContent = '준비 완료 ' + done + ' / ' + boxes.length;
+    }
+
+    boxes.forEach(function (box) {
+      box.addEventListener('change', updateChecklist);
+    });
+    updateChecklist();
+  </script>
+
+</body>
+</html>
